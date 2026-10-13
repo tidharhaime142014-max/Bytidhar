@@ -273,7 +273,7 @@
         </main>
     </div>
 
-    <!-- סרגל ניווט תחתון לטלפונים ניידים -->
+    <!-- סרגל ניווט תחתון לטלפונים ניידים (כולל כל הלשוניות) -->
     <nav class="md:hidden fixed bottom-24 left-0 right-0 bg-[#181818]/95 backdrop-blur-md border-t border-[#282828] flex justify-around py-2.5 z-40">
         <button onclick="switchTab('home')" class="flex flex-col items-center gap-1 text-white" id="mob-nav-home">
             <i class="fa-solid fa-house text-base"></i>
@@ -794,6 +794,19 @@
                 return;
             }
 
+            if (activeTab === 'browse' || activeTab === 'library') {
+                container.innerHTML = `
+                    <div class="py-8">
+                        <h1 class="text-3xl font-black mb-6">${activeTab === 'browse' ? 'חיפוש אלבומים' : 'הספרייה שלך'}</h1>
+                        <input type="text" id="search-input" oninput="filterAlbums(this.value)" placeholder="חפש לפי שם אלבום או אמן..." class="w-full md:w-96 px-4 py-3 bg-[#2a2a2a] rounded-xl text-sm text-white focus:outline-none border border-white/10 focus:border-[#1db954] mb-8">
+                        <div id="browse-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                            ${renderAlbumsHtml(albumsList)}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
             container.innerHTML = `
                 <div class="py-6 space-y-8">
                     <div>
@@ -928,6 +941,13 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function filterAlbums(query) {
+            const grid = document.getElementById('browse-grid');
+            if (!grid) return;
+            const filtered = albumsList.filter(a => a.title.toLowerCase().includes(query.toLowerCase()) || a.artist.toLowerCase().includes(query.toLowerCase()));
+            grid.innerHTML = renderAlbumsHtml(filtered);
         }
 
         function openCreateAlbumModal() {
